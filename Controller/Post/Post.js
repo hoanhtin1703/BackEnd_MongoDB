@@ -32,9 +32,9 @@ const collection = async () => {
     res.status(500).send("Internal Server Error");
   }
 };
-dotenv.config();
-const HOST_IP = process.env.HOST_URL;
-console.log(HOST_IP);
+// dotenv.config();
+// const HOST_IP = process.env.HOST_URL;
+// console.log(HOST_IP);
 module.exports.getallPosts = async (req, res) => {
   try {
     const postcollection = await collection();

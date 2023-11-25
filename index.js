@@ -29,6 +29,7 @@ async function main() {
   console.log("Connect MongoDB Successfully");
 }
 const { AuthController } = require("./v1/Controller/Auth");
+const { BlogController } = require("./v1/Controller/Blog");
 const { hello, signup, singin, getuserbyid } = require("./Controller/Auth");
 const {
   getallPosts,
@@ -54,3 +55,13 @@ app.listen(7000, () => {
 //v1 Route
 app.post("/v1/singin", AuthController.singin);
 app.post("/v1/singup", AuthController.singup);
+// v1 Route Blogs
+app.get("/v1/getallposts", BlogController.getallPost);
+app.post(
+  "/v1/createNewPost",
+  uploadFilePost.single("file"),
+  BlogController.createnewPost
+);
+app.get("/v1/getnewpost", BlogController.paginationPost);
+app.post("/v1/like_post", BlogController.likePost);
+app.post("/v1/unlike_post", BlogController.unlikePost);

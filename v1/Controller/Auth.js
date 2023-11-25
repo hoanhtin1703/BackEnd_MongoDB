@@ -41,9 +41,7 @@ module.exports.AuthController = {
   // Singup function
   singup: async (req, res) => {
     try {
-      const token = crypto.randomBytes(32).toString("hex");
       const newAuth = new User(req.body);
-
       const saveAuth = await newAuth.save(newAuth);
       res.status(200).json({
         status: true,

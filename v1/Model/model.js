@@ -48,12 +48,39 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-
 userSchema.pre("save", async function (next) {
   if (this.isModified("password")) {
     this.password = await bcrypt.hash(this.password, 10);
   }
   next();
 });
+const Blogschema = new mongoose.Schema(
+  {
+    author: {
+      type: mongoose.Schema.ObjectId,
+      ref: "Users",
+    },
+    content: {
+      type: String,
+      require: true,
+    },
+    image_url: {
+      type: String,
+      require: true,
+    },
+    like_count: {
+      type: Number,
+      default: 0,
+    },
+    comments_count: {
+      type: Number,
+      default: 0,
+    },
+    likes: [],
+    comments: [],
+  },
+  { timestamps: true }
+);
 const User = mongoose.model("Users", userSchema);
-module.exports = { User };
+const Blog = mongoose.model("Blogs", Blogschema);
+module.exports = { User, Blog };
