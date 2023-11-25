@@ -30,8 +30,8 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    profilePicture: String,
-    coverPicture: String,
+    profilePicture: { type: String, default: "" },
+    coverPicture: { type: String, default: "" },
     phone: {
       type: String,
       default: "",
@@ -45,7 +45,14 @@ const userSchema = new mongoose.Schema(
       require: true,
       default: token,
     },
+    ownPost: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Blogs",
+      },
+    ],
   },
+
   { timestamps: true }
 );
 userSchema.pre("save", async function (next) {
@@ -57,7 +64,7 @@ userSchema.pre("save", async function (next) {
 const Blogschema = new mongoose.Schema(
   {
     author: {
-      type: mongoose.Schema.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Users",
     },
     content: {

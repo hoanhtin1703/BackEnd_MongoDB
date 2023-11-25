@@ -3,7 +3,7 @@ var app = express();
 const bodyParser = require("body-parser");
 app.use(express.json());
 app.use(bodyParser.json());
-const { Blog } = require("../../v1/Model/model");
+const { Blog, User } = require("../../v1/Model/model");
 module.exports.BlogController = {
   createnewPost: async (req, res) => {
     try {
@@ -13,9 +13,15 @@ module.exports.BlogController = {
         image_url: req.file.filename,
       });
       const saveBlog = await blogs.save(blogs);
+      const user = await User.findById(saveBlog.author);
+      await user.updateOne({ $push: { ownPost: saveBlog._id } });
       res.status(200).json({
         status: true,
-        data: saveBlog,
+        message: "Create new Blog successfully",
+        data: await saveBlog.populate({
+          path: "author",
+          select: ["username", "profilePicture", "token"],
+        }),
       });
     } catch (error) {
       console.error("Error fetching data from the database:", error.message);
@@ -38,7 +44,12 @@ module.exports.BlogController = {
       const blogs = await Blog.find()
         .sort({ _id: 1 })
         .skip((page - 1) * pageSize)
-        .limit(pageSize);
+        .limit(pageSize)
+        .populate({
+          path: "author",
+          select: ["username", "profilePicture", "token"],
+        });
+
       res.json({
         status: true,
         data: blogs,
@@ -58,7 +69,7 @@ module.exports.BlogController = {
       const author_id = req.body.author_id;
       await Blog.findOneAndUpdate(
         { _id: blog_id },
-        { $inc: { like_count: 1 }, $push: { likes: author_id } },
+        { $inc: { like_count: 1 }, $addToSet: { likes: author_id } },
         { new: true }
       );
       res.json({
