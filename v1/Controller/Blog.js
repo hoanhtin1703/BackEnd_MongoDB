@@ -67,12 +67,13 @@ module.exports.BlogController = {
     try {
       const blog_id = req.body.blog_id;
       const author_id = req.body.author_id;
-      await Blog.findOneAndUpdate(
+      const data = await Blog.findOneAndUpdate(
         { _id: blog_id },
         { $inc: { like_count: 1 }, $addToSet: { likes: author_id } },
         { new: true }
       );
       res.json({
+        data: data,
         status: true,
         message: "like thành công",
       });
@@ -85,13 +86,14 @@ module.exports.BlogController = {
     try {
       const blog_id = req.body.blog_id;
       const author_id = req.body.author_id;
-      await Blog.findOneAndUpdate(
+      const data = await Blog.findOneAndUpdate(
         { _id: blog_id },
         { $pull: { likes: author_id }, $inc: { like_count: -1 } },
         { new: true }
       );
       res.json({
         status: true,
+        data: data,
         message: "un like thành công",
       });
     } catch (error) {

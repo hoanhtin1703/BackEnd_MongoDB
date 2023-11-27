@@ -30,7 +30,11 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    profilePicture: { type: String, default: "" },
+    profilePicture: {
+      type: String,
+      default:
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBxWM9QvgIJd3v8FXT99rxELV1mDHjybGS9A&usqp=CAU",
+    },
     coverPicture: { type: String, default: "" },
     phone: {
       type: String,
@@ -83,11 +87,49 @@ const Blogschema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    likes: [],
-    comments: [],
+    likes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
+    comments: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Comments",
+      },
+    ],
   },
   { timestamps: true }
 );
+
+const commentSchema = new mongoose.Schema(
+  {
+    text: {
+      type: String,
+      trim: true,
+    },
+    author: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      require: true,
+    },
+    replies: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Comments",
+      },
+    ],
+  },
+
+  {
+    timestamps: true,
+  }
+);
+
+// create a collection
+const Comment = mongoose.model("Comments", commentSchema);
 const User = mongoose.model("Users", userSchema);
 const Blog = mongoose.model("Blogs", Blogschema);
-module.exports = { User, Blog };
+module.exports = { User, Blog, Comment };

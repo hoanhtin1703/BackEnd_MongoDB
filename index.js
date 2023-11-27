@@ -30,6 +30,7 @@ async function main() {
 }
 const { AuthController } = require("./v1/Controller/Auth");
 const { BlogController } = require("./v1/Controller/Blog");
+const { CommentController } = require("./v1/Controller/Comment");
 const { hello, signup, singin, getuserbyid } = require("./Controller/Auth");
 const {
   getallPosts,
@@ -63,5 +64,7 @@ app.post(
   BlogController.createnewPost
 );
 app.get("/v1/getnewpost", BlogController.paginationPost);
-app.post("/v1/like_post", BlogController.likePost);
-app.post("/v1/unlike_post", BlogController.unlikePost);
+app.put("/v1/like_post", BlogController.likePost);
+app.put("/v1/unlike_post", BlogController.unlikePost);
+// v1 Route Comment
+app.post("/v1/add_commnent", CommentController.addComment);
