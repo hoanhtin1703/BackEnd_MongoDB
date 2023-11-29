@@ -69,4 +69,19 @@ module.exports.AuthController = {
       }
     }
   },
+  showprofile: async (req, res) => {
+    const authorId = req.params.id;
+    const profile = await User.findById(authorId).populate({
+      path: "ownPost",
+    });
+    if (!profile) {
+      res.json({
+        message: "Không tìm thấy người dùng này",
+      });
+    }
+    res.json({
+      status: true,
+      data: profile,
+    });
+  },
 };

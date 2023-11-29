@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 app.use(express.json());
 app.use(bodyParser.json());
 const { Blog, User } = require("../../v1/Model/model");
+const path = require("path");
 module.exports.BlogController = {
   createnewPost: async (req, res) => {
     try {
@@ -48,7 +49,24 @@ module.exports.BlogController = {
         .populate({
           path: "author",
           select: ["username", "profilePicture", "token"],
-        });
+        })
+        .populate({
+          path: "comments",
+          populate: [
+            {
+              path: "author",
+              select: ["username", "profilePicture", "token", "isAdmin"],
+            },
+            {
+              path: "replies",
+              populate: {
+                path: "author",
+                select: ["username", "profilePicture", "token", "isAdmin"],
+              },
+            },
+          ],
+        })
+        .exec();
 
       res.json({
         status: true,

@@ -90,7 +90,7 @@ const Blogschema = new mongoose.Schema(
     likes: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
+        ref: "Users",
       },
     ],
 
@@ -111,14 +111,20 @@ const commentSchema = new mongoose.Schema(
       trim: true,
     },
     author: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      type: mongoose.Schema.ObjectId,
+      ref: "Users",
       require: true,
     },
     replies: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Comments",
+      },
+    ],
+    likes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Users",
       },
     ],
   },

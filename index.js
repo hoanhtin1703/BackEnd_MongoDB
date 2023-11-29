@@ -53,7 +53,8 @@ app.post("/createNewPost", uploadFilePost.single("file"), createNewPost);
 app.listen(7000, () => {
   console.log(`Example app listening on port 3000!`);
 });
-//v1 Route
+//v1 Route Auth
+app.get("/v1/profile/:id", AuthController.showprofile);
 app.post("/v1/singin", AuthController.singin);
 app.post("/v1/singup", AuthController.singup);
 // v1 Route Blogs
@@ -67,4 +68,5 @@ app.get("/v1/getnewpost", BlogController.paginationPost);
 app.put("/v1/like_post", BlogController.likePost);
 app.put("/v1/unlike_post", BlogController.unlikePost);
 // v1 Route Comment
-app.post("/v1/add_commnent", CommentController.addComment);
+app.put("/v1/add_commnent", CommentController.addComment);
+app.put("/v1/reply_commnent", CommentController.reply_comment);
