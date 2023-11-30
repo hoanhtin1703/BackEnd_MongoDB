@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const token = crypto.randomBytes(32).toString("hex");
+const validate = require("mongoose-validator");
 const userSchema = new mongoose.Schema(
   {
     username: {
@@ -12,6 +13,12 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
+      validate: {
+        validator: function (value) {
+          return value.length >= 8; // Kiểm tra độ dài mật khẩu phải ít nhất 8 ký tự
+        },
+        message: "Password must be at least 8 characters long",
+      },
     },
     firstname: {
       type: String,
@@ -23,8 +30,9 @@ const userSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      require: true,
+      required: true,
       unique: true,
+      lowercase: true,
     },
     isAdmin: {
       type: Boolean,
@@ -35,23 +43,34 @@ const userSchema = new mongoose.Schema(
       default:
         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBxWM9QvgIJd3v8FXT99rxELV1mDHjybGS9A&usqp=CAU",
     },
-    coverPicture: { type: String, default: "" },
+    coverPicture: { type: String, default: null },
     phone: {
       type: String,
-      default: "",
+      default: null,
     },
     about: String,
     worksAt: String,
-    followers: [],
+    friends: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Users",
+      },
+    ],
+    sentfriendRequests: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Users",
+      },
+    ],
     following: [],
     token: {
       type: String,
-      require: true,
+      required: true,
       default: token,
     },
     ownPost: [
       {
-        type: mongoose.Schema.Types.ObjectId,
+        type: [mongoose.Schema.Types.ObjectId],
         ref: "Blogs",
       },
     ],
@@ -68,7 +87,7 @@ userSchema.pre("save", async function (next) {
 const Blogschema = new mongoose.Schema(
   {
     author: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: [mongoose.Schema.Types.ObjectId],
       ref: "Users",
     },
     content: {

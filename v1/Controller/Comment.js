@@ -39,10 +39,10 @@ module.exports.CommentController = {
   reply_comment: async (req, res) => {
     try {
       const blogId = new mongoose.Types.ObjectId(req.body.blog_id);
-      const parentId = new mongoose.Types.ObjectId(req.body.comment_id);
+      const commentId = new mongoose.Types.ObjectId(req.body.comment_id);
       const post = await Blog.exists({ _id: blogId });
       if (post) {
-        const commentExists = await Comment.exists({ _id: parentId });
+        const commentExists = await Comment.exists({ _id: commentId });
         if (!commentExists) {
           return res
             .status(404)

@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const bcrypt = require("bcrypt");
 const { User } = require("../../v1/Model/model");
+const mongoose = require("mongoose");
 module.exports.AuthController = {
   // Signin function
   singin: async (req, res) => {
@@ -83,5 +84,96 @@ module.exports.AuthController = {
       status: true,
       data: profile,
     });
+  },
+  sendFriendrequest: async (req, res) => {
+    try {
+      const currentId = req.body.own_id;
+      const authorId = req.body.author_id;
+      const sendrequest = await User.findOneAndUpdate(
+        { _id: currentId },
+        {
+          $addToSet: { sentfriendRequests: authorId },
+        },
+        {
+          new: true,
+          upsert: true,
+        }
+      );
+      res.json({
+        status: true,
+        data: sendrequest,
+      });
+    } catch (error) {
+      res.json({ status: false, message: error.message });
+    }
+  },
+  // acceptsentfriendRequest: async (req, res) => {
+  //   try {
+  //     const ownId = req.body.own_id;
+  //     const authorId = req.body.author_id;
+  //     const owndata = await User.findById(ownId);
+  //     if (owndata) {
+  //       const existfriendrequest = owndata.sentfriendRequests.includes(
+  //         new mongoose.Types.ObjectId(authorId)
+  //       );
+  //       const existfriend = owndata.friends.includes(
+  //         new mongoose.Types.ObjectId(authorId)
+  //       );
+  //       if (existfriendrequest && !existfriend) {
+  //         const acceptRequest = await User.findOneAndUpdate(
+  //           { _id: ownId },
+  //           { $addToSet: { friends: authorId } },
+  //           { $pull: { sentfriendRequests: authorId } },
+  //           { new: true }
+  //         );
+  //         res.json({ message: "Kết bạn thành công", data: acceptRequest });
+  //       }
+  //     }
+  //   } catch (error) {
+  //     res.json({ error: error.message });
+  //   }
+  // },
+  acceptsentfriendRequest: async (req, res) => {
+    try {
+      const ownId = req.body.own_id;
+      const authorId = req.body.author_id;
+      // bulkWrite cho phép thực hiện nhiều truy vấn cùng 1 lúc
+      await User.bulkWrite([
+        {
+          updateOne: {
+            filter: { _id: ownId, sentfriendRequests: { $in: [authorId] } },
+            update: {
+              $pull: { sentfriendRequests: authorId },
+              $addToSet: { friends: authorId },
+            },
+            upsert: true,
+          },
+        },
+      ]);
+      const user = await User.findById(ownId).populate({
+        path: "friends",
+      });
+      res
+        .status(200)
+        .json({ status: true, message: "Addfriend successfully", data: user });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+  unfriend: async (req, res) => {
+    try {
+      const ownId = req.body.own_id;
+      const authorId = req.body.author_id;
+      const data = await User.findByIdAndUpdate(
+        ownId,
+        { $pull: { friends: authorId } },
+        { new: true }
+      );
+      res
+        .status(200)
+        .json({ status: true, message: "Unfriend successfully", data: data });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
   },
 };

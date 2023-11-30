@@ -67,7 +67,6 @@ module.exports.BlogController = {
           ],
         })
         .exec();
-
       res.json({
         status: true,
         data: blogs,

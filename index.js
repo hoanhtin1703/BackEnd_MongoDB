@@ -57,6 +57,9 @@ app.listen(7000, () => {
 app.get("/v1/profile/:id", AuthController.showprofile);
 app.post("/v1/singin", AuthController.singin);
 app.post("/v1/singup", AuthController.singup);
+app.post("/v1/sendfriendrequest", AuthController.sendFriendrequest);
+app.post("/v1/acceptfriendrequest", AuthController.acceptsentfriendRequest);
+app.post("/v1/unfriend", AuthController.unfriend);
 // v1 Route Blogs
 app.get("/v1/getallposts", BlogController.getallPost);
 app.post(
